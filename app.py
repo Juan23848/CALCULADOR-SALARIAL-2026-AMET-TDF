@@ -64,7 +64,7 @@ def cargar_estilos():
         }
 
         .block-container {
-            max-width: 1260px;
+            max-width: 1320px;
             padding-top: 1rem;
             padding-bottom: 3rem;
         }
@@ -73,18 +73,18 @@ def cargar_estilos():
             position: relative;
             display: flex;
             align-items: center;
-            gap: 2rem;
-            min-height: 10rem;
-            padding: 1.65rem 2rem;
-            margin: 0 0 1.25rem 0;
+            gap: 1.35rem;
+            min-height: 7.4rem;
+            padding: 1rem 1.45rem;
+            margin: 0 0 1rem 0;
             color: #ffffff;
             overflow: hidden;
             background:
                 radial-gradient(circle at 96% 16%, rgba(255, 255, 255, 0.16) 0 1px, transparent 1px) 0 0 / 14px 14px,
                 linear-gradient(150deg, #0000ff 0%, #0018c9 46%, #05c7c8 100%);
             border: 0;
-            border-radius: 14px;
-            box-shadow: 0 18px 42px rgba(0, 82, 180, 0.20);
+            border-radius: 12px;
+            box-shadow: 0 14px 32px rgba(0, 82, 180, 0.18);
         }
 
         .amet-hero::before {
@@ -100,8 +100,8 @@ def cargar_estilos():
         .amet-hero__logo {
             position: relative;
             z-index: 1;
-            flex: 0 0 325px;
-            height: 96px;
+            flex: 0 0 260px;
+            height: 72px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -125,7 +125,7 @@ def cargar_estilos():
             z-index: 1;
             width: 1px;
             align-self: stretch;
-            min-height: 84px;
+            min-height: 64px;
             background: rgba(255, 255, 255, 0.44);
         }
 
@@ -138,7 +138,7 @@ def cargar_estilos():
 
         .amet-hero__copy h1 {
             margin: 0;
-            font-size: clamp(2rem, 3.8vw, 3.25rem);
+            font-size: clamp(1.7rem, 2.8vw, 2.45rem);
             line-height: 1.02;
             letter-spacing: 0;
             color: #ffffff;
@@ -146,10 +146,10 @@ def cargar_estilos():
         }
 
         .amet-hero__copy p {
-            margin: 0.72rem 0 0 0;
+            margin: 0.46rem 0 0 0;
             max-width: 820px;
             color: rgba(255, 255, 255, 0.90);
-            font-size: 1.02rem;
+            font-size: 0.95rem;
         }
 
         .amet-hero__tag {
@@ -158,12 +158,12 @@ def cargar_estilos():
             justify-content: center;
             width: fit-content;
             max-width: 100%;
-            margin: 0 auto 0.65rem auto;
-            padding: 0.33rem 0.82rem;
+            margin: 0 auto 0.46rem auto;
+            padding: 0.26rem 0.72rem;
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.16);
             color: #ffffff;
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             font-weight: 800;
             line-height: 1.15;
             text-align: center;
@@ -189,7 +189,7 @@ def cargar_estilos():
 
         .section-title {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 0.72rem;
             margin: 0 0 1.05rem 0;
         }
@@ -296,7 +296,7 @@ def cargar_estilos():
 
         .mini-stat-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(7.6rem, 1fr));
             gap: 0.65rem;
             margin: 0.35rem 0 0.85rem 0;
         }
@@ -321,11 +321,54 @@ def cargar_estilos():
         .mini-stat__value {
             margin: 0;
             color: var(--amet-ink);
-            font-size: clamp(1.05rem, 1.55vw, 1.42rem);
+            font-size: clamp(1rem, 1.1vw, 1.18rem);
             line-height: 1.08;
             font-weight: 500;
             white-space: normal;
-            word-break: keep-all;
+            overflow-wrap: anywhere;
+        }
+
+        .compact-metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(8.4rem, 1fr));
+            gap: 0.65rem;
+            margin: 0.25rem 0 0.85rem 0;
+        }
+
+        .compact-metric-grid--two {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .compact-metric {
+            min-width: 0;
+            padding: 0.78rem 0.86rem;
+            border: 1px solid #cfe0ff;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #ffffff, #f8fbff);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+        }
+
+        .compact-metric--wide {
+            grid-column: 1 / -1;
+        }
+
+        .compact-metric__label {
+            margin: 0 0 0.32rem 0;
+            color: #2452a3;
+            font-size: 0.73rem;
+            line-height: 1.15;
+            font-weight: 800;
+        }
+
+        .compact-metric__value {
+            margin: 0;
+            color: var(--amet-ink);
+            font-size: clamp(1.18rem, 1.55vw, 1.55rem);
+            line-height: 1.08;
+            font-weight: 650;
+            letter-spacing: 0;
+            white-space: normal;
+            overflow-wrap: anywhere;
         }
 
         [data-testid="stTooltipIcon"] {
@@ -440,14 +483,20 @@ def cargar_estilos():
         }
 
         @media (max-width: 900px) {
+            .block-container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
             .amet-hero {
                 display: block;
                 padding: 1.15rem;
+                min-height: 0;
             }
 
             .amet-hero__logo {
                 width: 100%;
-                height: 76px;
+                height: 66px;
                 margin-bottom: 0.9rem;
             }
 
@@ -469,7 +518,29 @@ def cargar_estilos():
             }
 
             .mini-stat-grid {
+                grid-template-columns: repeat(auto-fit, minmax(6.8rem, 1fr));
+                gap: 0.45rem;
+            }
+
+            .mini-stat {
+                padding: 0.62rem;
+            }
+
+            .mini-stat__label {
+                font-size: 0.68rem;
+            }
+
+            .mini-stat__value {
+                font-size: 0.98rem;
+            }
+
+            .compact-metric-grid,
+            .compact-metric-grid--two {
                 grid-template-columns: 1fr;
+            }
+
+            .compact-metric__value {
+                font-size: 1.18rem;
             }
         }
         </style>
@@ -540,6 +611,38 @@ def nota_chica(mensaje: str):
     )
 
 
+def mostrar_advertencia_ley_761(control_acumulacion: dict):
+    if control_acumulacion["estado"] == "ok":
+        st.info(
+            "Control Ley 761: con la carga ingresada no aparece una advertencia "
+            "básica de exceso. Este control es orientativo y no bloquea el cálculo."
+        )
+        return
+
+    st.warning(
+        "Control Ley 761: la carga ingresada podría no encuadrar en los límites "
+        "básicos de acumulación. Revisar la situación particular antes de tomar "
+        "este resultado como referencia."
+    )
+
+
+def tarjetas_metricas(items: list[dict], columnas: str = "auto"):
+    clase_columnas = f" compact-metric-grid--{columnas}" if columnas != "auto" else ""
+    tarjetas = []
+    for item in items:
+        clase_extra = " compact-metric--wide" if item.get("wide") else ""
+        tarjetas.append(
+            f'<div class="compact-metric{clase_extra}">'
+            f'<p class="compact-metric__label">{html.escape(item["label"])}</p>'
+            f'<p class="compact-metric__value">{html.escape(item["value"])}</p>'
+            "</div>"
+        )
+    st.markdown(
+        f'<div class="compact-metric-grid{clase_columnas}">{"".join(tarjetas)}</div>',
+        unsafe_allow_html=True,
+    )
+
+
 @st.cache_data
 def cargar_cargos():
     _ = CARGOS_CACHE_VERSION
@@ -585,7 +688,6 @@ def mostrar_detalle(resultado: dict):
     componentes = resultado["componentes"]
     legales = resultado["descuentosLegales"]
     sindicales = resultado.get("descuentosSindicales", {})
-    adicionales = resultado["descuentosAdicionales"]
     detalle_no_rem = resultado.get("noRemunerativosAutomaticosDetalle", {})
     incluye_no_rem_auto = resultado.get("noRemunerativosAutomaticos", 0.0) > 0
     foid_auto = detalle_no_rem.get("foid", 0.0) if incluye_no_rem_auto else 0.0
@@ -659,10 +761,6 @@ def mostrar_detalle(resultado: dict):
                     "Monto": moneda(sindicales.get("total", 0.0)),
                 },
                 {
-                    "Concepto": "Descuentos personales fijos",
-                    "Monto": moneda(adicionales["monto_fijo"]),
-                },
-                {
                     "Concepto": "Neto sin no remunerativos",
                     "Monto": moneda(resultado["netoSinNoRemunerativos"]),
                 },
@@ -673,10 +771,6 @@ def mostrar_detalle(resultado: dict):
                 {
                     "Concepto": "Refuerzo ayuda material didáctico automático",
                     "Monto": moneda(material_auto),
-                },
-                {
-                    "Concepto": "Otros no remunerativos",
-                    "Monto": moneda(resultado.get("otrosNoRemunerativos", 0.0)),
                 },
                 {
                     "Concepto": "No remunerativos total",
@@ -753,33 +847,34 @@ except Exception as exc:
     st.error(f"No se pudo cargar la tabla de cargos: {exc}")
     st.stop()
 
-top_left, top_right = st.columns([0.40, 0.60], gap="medium")
+valor_indice = VALORES_INDICE_REFERENCIA["Mayo 2026 recibos"]
 
-with top_left:
-    with st.container(border=True):
-        titulo_tarjeta(
-            "Ubicación",
-            "Z",
-            "Seleccione ciudad o zona para aplicar el coeficiente correcto.",
+with st.container(border=True):
+    titulo_tarjeta(
+        "Ciudad y zona",
+        "1",
+        "Elija la ciudad o zona para aplicar automáticamente el coeficiente correspondiente.",
+    )
+    ubicacion_zona = st.selectbox(
+        "Ciudad / zona",
+        list(ZONAS_REFERENCIA.keys()),
+        index=0,
+        help="Define el porcentaje del suplemento zona.",
+    )
+    zona_referencia = ZONAS_REFERENCIA[ubicacion_zona]
+    zona_porcentaje_corto = f"{zona_referencia * 100:.0f}%"
+    if ubicacion_zona == "Escuelas Rurales":
+        estado_zona(
+            "Zona aplicada: "
+            f"{zona_porcentaje_corto}. Incluye Estancia Sara, Lago Escondido, "
+            "San Sebastián, Puerto Almanza y Escuela Antártica Nro. 38."
         )
-        ubicacion_zona = st.selectbox(
-            "Ubicación (zona)",
-            list(ZONAS_REFERENCIA.keys()),
-            index=0,
-            help="Define el porcentaje del suplemento zona.",
-        )
-        zona_referencia = ZONAS_REFERENCIA[ubicacion_zona]
-        zona_porcentaje_corto = f"{zona_referencia * 100:.0f}%"
-        if ubicacion_zona == "Escuelas Rurales":
-            detalle_zona = (
-                "Incluye Estancia Sara, Lago Escondido, San Sebastián, "
-                "Puerto Almanza y Escuela Antártica Nro. 38."
-            )
-            estado_zona(
-                f"Coeficiente de zona aplicado: {zona_porcentaje_corto}. {detalle_zona}"
-            )
-        else:
-            estado_zona(f"Coeficiente de zona aplicado: {zona_porcentaje_corto}.")
+    else:
+        estado_zona(f"Zona aplicada: {zona_porcentaje_corto}.")
+    st.caption(
+        "Valor índice aplicado: Mayo 2026 recibos "
+        f"({str(valor_indice).replace('.', ',')})."
+    )
 
 cargos_ubicacion = [
     ajustar_bonificacion_docente_por_ubicacion(cargo, ubicacion_zona)
@@ -792,275 +887,148 @@ indice_212 = next(
     0,
 )
 
-with top_right:
-    with st.container(border=True):
-        titulo_tarjeta(
-            "Cargos u horas cátedra",
-            "C",
-            "Agrupe por código o tipo de cargo, tal como se liquidará en el recibo.",
-        )
-        cantidad_lineas = st.number_input(
-            "Cantidad de cargos u horas cátedra a incorporar",
-            min_value=1,
-            max_value=6,
-            value=1,
-            step=1,
-            help=(
-                "Agrupe por código o tipo de cargo. Si un mismo código tiene una parte "
-                "con bonificación por institución y otra parte sin bonificación, cárguelo "
-                "en dos líneas."
-            ),
-        )
+with st.container(border=True):
+    titulo_tarjeta(
+        "Cargos u horas cátedra",
+        "2",
+        "Indique cuántas líneas necesita y cargue cada cargo u hora como aparece en el recibo.",
+    )
+    cantidad_lineas = st.number_input(
+        "Cantidad de cargos u horas cátedra a incorporar",
+        min_value=1,
+        max_value=6,
+        value=1,
+        step=1,
+        help=(
+            "Agrupe por código o tipo de cargo. Si un mismo código tiene una parte "
+            "con bonificación por institución y otra parte sin bonificación, cárguelo "
+            "en dos líneas."
+        ),
+    )
 
-        cargos_seleccionados = []
-        for indice in range(int(cantidad_lineas)):
-            st.markdown(f"**Cargo / hora {indice + 1}**")
-            col_cargo, col_cantidad = st.columns([5, 1])
-            with col_cargo:
-                seleccionado = st.selectbox(
-                    "Seleccionar cargo u horas cátedra (puede escribir código o descripción)",
-                    opciones,
-                    index=indice_212 if indice == 0 else 0,
-                    key=f"cargo_{indice}",
-                )
-            cargo = dict(por_etiqueta[seleccionado])
-            with col_cantidad:
-                etiqueta_cantidad = "Horas" if cargo["esHoraCatedra"] else "Cantidad"
-                cantidad = st.number_input(
-                    etiqueta_cantidad,
-                    min_value=1,
-                    max_value=60,
-                    value=1,
-                    step=1,
-                    key=f"cantidad_{indice}",
-                )
-            cargo["cantidad"] = int(cantidad)
-            cargos_seleccionados.append(cargo)
-        nota_chica(
-            "Para sumar otra línea, aumente la cantidad de cargos u horas cátedra a incorporar."
-        )
+    cargos_seleccionados = []
+    for indice in range(int(cantidad_lineas)):
+        st.markdown(f"**Cargo / hora {indice + 1}**")
+        col_cargo, col_cantidad = st.columns([5, 1])
+        with col_cargo:
+            seleccionado = st.selectbox(
+                "Seleccionar cargo u horas cátedra (puede escribir código o descripción)",
+                opciones,
+                index=indice_212 if indice == 0 else 0,
+                key=f"nuevo_cargo_{indice}",
+            )
+        cargo = dict(por_etiqueta[seleccionado])
+        with col_cantidad:
+            etiqueta_cantidad = "Horas" if cargo["esHoraCatedra"] else "Cantidad"
+            cantidad = st.number_input(
+                etiqueta_cantidad,
+                min_value=1,
+                max_value=60,
+                value=1,
+                step=1,
+                key=f"nuevo_cantidad_{indice}",
+            )
+        cargo["cantidad"] = int(cantidad)
+        cargos_seleccionados.append(cargo)
+
+    nota_chica(
+        "Para sumar otra línea, aumente la cantidad de cargos u horas cátedra a incorporar."
+    )
 
 cargos_seleccionados = consolidar_cargos(cargos_seleccionados)
-
-with top_left:
-    with st.container(border=True):
-        titulo_tarjeta(
-            "Control orientativo Ley Provincial 761",
-            "761",
-            "El control advierte posibles excesos, no bloquea la simulación.",
-        )
-        nivel_excepcion_label = st.selectbox(
-            "Tipo a considerar",
-            list(NIVELES_EXCEPCION.keys()),
-            help=(
-                "La ley permite excepciones bajo condiciones específicas. "
-                "Este control advierte, no bloquea el cálculo."
-            ),
-        )
-        control_acumulacion = evaluar_acumulacion(
-            cargos_seleccionados,
-            NIVELES_EXCEPCION[nivel_excepcion_label],
-        )
-        resumen_acumulacion = control_acumulacion["resumen"]
-        col_horas, col_simple = st.columns(2)
-        col_completo, col_directivo = st.columns(2)
-        col_horas.metric("Horas cátedra", f"{resumen_acumulacion['horasCatedra']:g}")
-        col_simple.metric("Jornada simple", f"{resumen_acumulacion['jornadaSimple']:g}")
-        col_completo.metric(
-            "Jornada completa",
-            f"{resumen_acumulacion['jornadaCompleta']:g}",
-        )
-        col_directivo.metric(
-            "Directivos/jerárquicos",
-            f"{resumen_acumulacion['directivosJerarquicos']:g}",
-        )
-        st.caption(
-            f"Combinación evaluada: {control_acumulacion['combinacionEvaluada']} | "
-            f"Tope de horas cátedra considerado: {control_acumulacion['maxHorasPermitidas']:g}"
-        )
-        if control_acumulacion["estado"] == "ok":
-            st.success("La carga no supera los topes básicos evaluados por la Ley 761.")
-        else:
-            for advertencia in control_acumulacion["advertencias"]:
-                st.warning(advertencia)
-            if control_acumulacion["articulos"]:
-                st.caption(
-                    "Artículos relacionados: "
-                    + ", ".join(control_acumulacion["articulos"])
-                )
-
+control_acumulacion = evaluar_acumulacion(cargos_seleccionados, 0)
+resumen_acumulacion = control_acumulacion["resumen"]
 detalle_no_remunerativos = calcular_no_remunerativos(cargos_seleccionados)
 
-fila_secundaria = st.columns([0.32, 0.34, 0.34], gap="medium")
+with st.container(border=True):
+    titulo_tarjeta(
+        "Antigüedad",
+        "3",
+        "Ingrese los años de antigüedad reconocidos.",
+    )
+    anios_antiguedad = st.number_input(
+        "Años de antigüedad reconocidos",
+        min_value=0,
+        max_value=50,
+        value=0,
+        step=1,
+    )
 
-with fila_secundaria[0]:
-    with st.container(border=True):
-        titulo_tarjeta(
-            "Antigüedad",
-            "A",
-            "Datos base para calcular el salario actual.",
-        )
-        anios_antiguedad = st.number_input(
-            "Años de antigüedad reconocidos",
-            min_value=0,
-            max_value=50,
-            value=0,
-            step=1,
-        )
-        valor_indice_texto = st.text_input(
-            "Valor Índice actual",
-            value=str(VALORES_INDICE_REFERENCIA["Mayo 2026 recibos"]).replace(".", ","),
-            help="Acepta coma o punto decimal. Ejemplo: 95,722485",
-        )
-        st.caption(
-            "Valor índice de referencia: "
-            + " | ".join(
-                f"{nombre}: {str(valor).replace('.', ',')}"
-                for nombre, valor in VALORES_INDICE_REFERENCIA.items()
-            )
-        )
+with st.container(border=True):
+    titulo_tarjeta(
+        "Descuento sindical",
+        "4",
+        "Único descuento opcional a seleccionar por el docente.",
+    )
+    sindicatos_seleccionados = st.multiselect(
+        "Sindicato(s)",
+        list(SINDICATOS.keys()),
+        default=[],
+        max_selections=3,
+        placeholder="Sin descuento sindical",
+        help="Seleccione hasta 3 afiliaciones sindicales. Si no corresponde, deje el campo vacío.",
+    )
+    st.caption(
+        "Jubilación, obra social y seguro de vida se calculan automáticamente; "
+        "no requieren carga manual."
+    )
 
-with fila_secundaria[1]:
-    with st.container(border=True):
-        titulo_tarjeta(
-            "Adicionales",
-            "+",
-            "No remunerativos automáticos y ajustes excepcionales.",
-        )
-        col_foid, col_material = st.columns(2)
-        col_foid.metric("FOID", moneda(detalle_no_remunerativos["foid"]))
-        col_material.metric(
-            "Material didáctico",
-            moneda(detalle_no_remunerativos["materialDidactico"]),
-        )
-        st.metric("Total automático", moneda(detalle_no_remunerativos["total"]))
-        st.caption(
-            "Computa hasta 2 cargos simples equivalentes. "
-            f"Cargos computados: {detalle_no_remunerativos['equivalenteCargosSimplesComputados']:g}; "
-            f"horas cátedra computadas: {detalle_no_remunerativos['horasCatedraComputadas']:g} "
-            f"de {detalle_no_remunerativos['horasCatedraCargadas']:g} cargadas."
-        )
-        with st.expander("Ajustes opcionales", expanded=False):
-            ajuste_remunerativo_texto = st.text_input(
-                "Proporcional vacaciones / ajuste remunerativo especial",
-                value="0",
-                help=(
-                    "Use este campo solo si el recibo trae un adicional remunerativo "
-                    "excepcional, por ejemplo el item 215 Proporcional Vacaciones. "
-                    "Este monto suma al bruto y lleva descuentos."
-                ),
-            )
-            otros_no_remunerativos_texto = st.text_input(
-                "Otros no remunerativos (sin FOID/material)",
-                value="0",
-                help=(
-                    "Importes excepcionales que se suman luego de descuentos. "
-                    "FOID y material didáctico ya se calculan automáticamente."
-                ),
-            )
-            descuento_adicional_fijo_texto = st.text_input(
-                "Descuentos personales fijos",
-                value="0",
-                help=(
-                    "Use este campo solo si quiere sumar descuentos personales con "
-                    "importe propio que no sean sindicales. El seguro de vida "
-                    "obligatorio y el descuento sindical ya se calculan aparte."
-                ),
-            )
+with st.container(border=True):
+    titulo_tarjeta(
+        "Resumen de datos cargados",
+        "R",
+        "Vista general antes de calcular.",
+    )
+    tarjetas_metricas(
+        [
+            {"label": "Ciudad / zona", "value": ubicacion_zona},
+            {"label": "Zona aplicada", "value": zona_porcentaje_corto},
+            {"label": "Antigüedad", "value": f"{int(anios_antiguedad)} años"},
+            {"label": "Líneas cargadas", "value": f"{len(cargos_seleccionados):g}"},
+            {
+                "label": "Horas cátedra",
+                "value": f"{resumen_acumulacion['horasCatedra']:g}",
+            },
+            {
+                "label": "Jornada simple",
+                "value": f"{resumen_acumulacion['jornadaSimple']:g}",
+            },
+            {
+                "label": "Jornada completa",
+                "value": f"{resumen_acumulacion['jornadaCompleta']:g}",
+            },
+            {
+                "label": "Directivos / jerárquicos",
+                "value": f"{resumen_acumulacion['directivosJerarquicos']:g}",
+            },
+            {
+                "label": "Descuento sindical",
+                "value": ", ".join(sindicatos_seleccionados) if sindicatos_seleccionados else "Sin descuento",
+                "wide": True,
+            },
+        ]
+    )
+    st.caption(
+        "No remunerativos automáticos previstos: FOID "
+        f"{moneda(detalle_no_remunerativos['foid'])} y material didáctico "
+        f"{moneda(detalle_no_remunerativos['materialDidactico'])}."
+    )
+    mostrar_advertencia_ley_761(control_acumulacion)
 
-with fila_secundaria[2]:
-    with st.container(border=True):
-        titulo_tarjeta(
-            "Descuentos",
-            "%",
-            "Obligatorios y sindicales.",
-        )
-        st.markdown(
-            f"""
-            <div class="mini-stat-grid">
-                <div class="mini-stat">
-                    <p class="mini-stat__label">Jubilación</p>
-                    <p class="mini-stat__value">16%</p>
-                </div>
-                <div class="mini-stat">
-                    <p class="mini-stat__label">Obra social</p>
-                    <p class="mini-stat__value">3%</p>
-                </div>
-                <div class="mini-stat">
-                    <p class="mini-stat__label">Seguro de vida</p>
-                    <p class="mini-stat__value">{html.escape(moneda(MONTO_SEGURO_VIDA_OBLIGATORIO))}</p>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.caption(
-            "Los descuentos obligatorios se calculan automáticamente sobre el bruto remunerativo."
-        )
-        cantidad_sindicatos = st.number_input(
-            "Cantidad de sindicatos",
-            min_value=0,
-            max_value=3,
-            value=0,
-            step=1,
-            help="Seleccione hasta 3 afiliaciones sindicales.",
-        )
-        opciones_sindicatos = list(SINDICATOS.keys())
-        sindicatos_seleccionados = []
-        if cantidad_sindicatos:
-            for indice in range(int(cantidad_sindicatos)):
-                sindicato = st.selectbox(
-                    f"Sindicato {indice + 1}",
-                    opciones_sindicatos,
-                    key=f"sindicato_{indice}",
-                )
-                sindicatos_seleccionados.append(sindicato)
-            sindicatos_unicos = []
-            for sindicato in sindicatos_seleccionados:
-                if sindicato not in sindicatos_unicos:
-                    sindicatos_unicos.append(sindicato)
-            if len(sindicatos_unicos) < len(sindicatos_seleccionados):
-                st.info("Si se repite un sindicato, se computa una sola vez.")
-            sindicatos_seleccionados = sindicatos_unicos
-
-st.markdown("")
-calcular = st.button("Calcular simulación", type="primary")
+boton_izq, boton_der = st.columns([0.68, 0.32])
+with boton_der:
+    calcular = st.button("Calcular simulación", type="primary", use_container_width=True)
 
 if calcular:
     try:
-        valor_indice = parse_decimal(valor_indice_texto, "Valor Índice actual")
-        otros_no_remunerativos = parse_decimal(
-            otros_no_remunerativos_texto,
-            "Otros no remunerativos",
-        )
-        if otros_no_remunerativos > 0:
-            st.warning(
-                "Recordatorio: FOID y Refuerzo Ayuda Material Didáctico ya se "
-                "suman automáticamente. Use este campo solo para otros conceptos "
-                "no remunerativos del recibo."
-            )
-        ajuste_remunerativo = parse_decimal(
-            ajuste_remunerativo_texto,
-            "Proporcional vacaciones / ajuste remunerativo especial",
-        )
-        if ajuste_remunerativo > 0:
-            st.info(
-                "El ajuste remunerativo especial se suma al bruto y se toma "
-                "como base para jubilación, obra social y sindicato."
-            )
-        descuento_adicional_fijo = parse_decimal(
-            descuento_adicional_fijo_texto,
-            "Descuentos personales fijos",
-        )
-
         resultado_actual = calcular_salario(
             cargos_seleccionados,
             valor_indice,
             int(anios_antiguedad),
-            otros_remunerativos=ajuste_remunerativo,
-            no_remunerativos=otros_no_remunerativos,
+            otros_remunerativos=0.0,
+            no_remunerativos=0.0,
             descuento_adicional_porcentaje=0.0,
-            descuento_adicional_fijo=descuento_adicional_fijo,
+            descuento_adicional_fijo=0.0,
             incluir_jubilacion=True,
             incluir_obra_social=True,
             tasa_obra_social=0.03,
@@ -1077,3 +1045,5 @@ if calcular:
 
     except ValueError as exc:
         st.error(str(exc))
+
+st.stop()
