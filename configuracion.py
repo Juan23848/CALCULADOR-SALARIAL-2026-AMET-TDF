@@ -8,6 +8,70 @@ VALOR_INDICE_CALCULO_PRINCIPAL = "Mayo 2026 Decreto 1059/26"
 VALOR_INDICE_COMPARATIVO_ANTERIOR = "Haberes abril 2026 (valor anterior)"
 VALOR_INDICE_COMPARATIVO_JULIO = "Julio 2026 Decreto 1059/26"
 
+IPC_2026_MENSUAL = [
+    {
+        "mes": "Enero",
+        "ipc": 0.029,
+        "estado": "Real INDEC",
+        "fuente": "IPC nacional - dato publicado",
+    },
+    {
+        "mes": "Febrero",
+        "ipc": 0.029,
+        "estado": "Real INDEC",
+        "fuente": "IPC nacional - dato publicado",
+    },
+    {
+        "mes": "Marzo",
+        "ipc": 0.034,
+        "estado": "Real INDEC",
+        "fuente": "IPC nacional - dato publicado",
+    },
+    {
+        "mes": "Abril",
+        "ipc": 0.026,
+        "estado": "Real INDEC",
+        "fuente": "IPC nacional - dato publicado",
+    },
+    {
+        "mes": "Mayo",
+        "ipc": 0.021,
+        "estado": "Real INDEC",
+        "fuente": "IPC nacional - dato publicado",
+    },
+    {
+        "mes": "Junio",
+        "ipc": 0.021,
+        "estado": "Estimado REM",
+        "fuente": "Mediana REM Mayo 2026",
+    },
+    {
+        "mes": "Julio",
+        "ipc": 0.020,
+        "estado": "Estimado REM",
+        "fuente": "Mediana REM Mayo 2026",
+    },
+    {
+        "mes": "Agosto",
+        "ipc": 0.018,
+        "estado": "Estimado REM",
+        "fuente": "Mediana REM Mayo 2026",
+    },
+]
+
+AUMENTOS_SALARIALES_2026_IMPACTO = [
+    {
+        "mes": "Junio",
+        "aumento": 0.035,
+        "detalle": "Decreto 1059/26: incremento de mayo, impacta en junio",
+    },
+    {
+        "mes": "Agosto",
+        "aumento": 0.040,
+        "detalle": "Decreto 1059/26: incremento de julio, impacta en agosto",
+    },
+]
+
 TASA_FUNCION_DOCENTE = 2.30
 TASA_TRANSFORMACION_EDUCATIVA = 1.23
 TASA_ZONA = 1.00

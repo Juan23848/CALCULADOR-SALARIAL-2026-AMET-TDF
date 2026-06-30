@@ -7,7 +7,12 @@ from cargos import (
     cargar_cargos_desde_xlsx,
     filtrar_cargos,
 )
-from configuracion import VALORES_INDICE_REFERENCIA, ZONAS_REFERENCIA
+from configuracion import (
+    AUMENTOS_SALARIALES_2026_IMPACTO,
+    IPC_2026_MENSUAL,
+    VALORES_INDICE_REFERENCIA,
+    ZONAS_REFERENCIA,
+)
 from descuentos import descuento_sindical
 from no_remunerativos import calcular_no_remunerativos
 from remunerativos import calcular_asignacion_hora_catedra
@@ -89,6 +94,43 @@ class CalculosSalarialesTest(unittest.TestCase):
             VALORES_INDICE_REFERENCIA["Julio 2026 Decreto 1059/26"],
             103.03567,
         )
+
+    def test_ipc_2026_y_aumentos_decreto_para_grafico(self):
+        self.assertEqual(
+            [item["mes"] for item in IPC_2026_MENSUAL],
+            ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto"],
+        )
+        self.assertEqual(
+            [item["estado"] for item in IPC_2026_MENSUAL],
+            [
+                "Real INDEC",
+                "Real INDEC",
+                "Real INDEC",
+                "Real INDEC",
+                "Real INDEC",
+                "Estimado REM",
+                "Estimado REM",
+                "Estimado REM",
+            ],
+        )
+
+        factor_ipc = 1.0
+        for item in IPC_2026_MENSUAL:
+            factor_ipc *= 1 + item["ipc"]
+        self.assertAlmostEqual(factor_ipc - 1, 0.2159006286301559)
+
+        aumentos = {
+            item["mes"]: item["aumento"] for item in AUMENTOS_SALARIALES_2026_IMPACTO
+        }
+        self.assertAlmostEqual(aumentos["Junio"], 0.035)
+        self.assertAlmostEqual(aumentos["Agosto"], 0.040)
+        self.assertNotIn("Mayo", aumentos)
+        self.assertNotIn("Julio", aumentos)
+
+        factor_salario = 1.0
+        for item in AUMENTOS_SALARIALES_2026_IMPACTO:
+            factor_salario *= 1 + item["aumento"]
+        self.assertAlmostEqual(factor_salario - 1, 0.0764)
 
     def test_descuentos_obligatorios_por_defecto(self):
         cargo = buscar_cargo(self.cargos, "212")

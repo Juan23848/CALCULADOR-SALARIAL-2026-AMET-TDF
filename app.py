@@ -3,12 +3,15 @@ import html
 import importlib
 from pathlib import Path
 
+import altair as alt
+import pandas as pd
 import streamlit as st
 
 import configuracion as cfg
 from acumulacion import NIVELES_EXCEPCION, evaluar_acumulacion
 from cargos import (
     ajustar_bonificacion_docente_por_ubicacion,
+    buscar_cargo,
     cargar_cargos_desde_xlsx,
     etiqueta_cargo,
 )
@@ -23,6 +26,8 @@ VALOR_INDICE_CALCULO_PRINCIPAL = cfg.VALOR_INDICE_CALCULO_PRINCIPAL
 VALOR_INDICE_COMPARATIVO_ANTERIOR = cfg.VALOR_INDICE_COMPARATIVO_ANTERIOR
 VALOR_INDICE_COMPARATIVO_JULIO = cfg.VALOR_INDICE_COMPARATIVO_JULIO
 VALORES_INDICE_REFERENCIA = cfg.VALORES_INDICE_REFERENCIA
+IPC_2026_MENSUAL = cfg.IPC_2026_MENSUAL
+AUMENTOS_SALARIALES_2026_IMPACTO = cfg.AUMENTOS_SALARIALES_2026_IMPACTO
 ZONAS_REFERENCIA = cfg.ZONAS_REFERENCIA
 
 BASE_DIR = Path(__file__).parent
@@ -876,6 +881,294 @@ def mostrar_netos_referencia(resultado_anterior: dict, resultado_julio: dict):
         )
 
 
+def _valor_indice_decreto_para_mes(mes: str) -> float:
+    if mes in {"Junio", "Julio"}:
+        return valor_indice
+    if mes == "Agosto":
+        return valor_indice_julio
+    return valor_indice_anterior
+
+
+def _neto_cargo_testigo_212(
+    cargos_disponibles: list[dict],
+    indice: float,
+    zona_referencia: float,
+) -> float:
+    cargo_testigo = buscar_cargo(cargos_disponibles, "212")
+    if cargo_testigo is None:
+        return 0.0
+    resultado = calcular_resultado_simulacion(
+        [{**cargo_testigo, "cantidad": 1}],
+        indice,
+        anios_antiguedad=1,
+        zona_referencia=zona_referencia,
+        sindicatos_seleccionados=[],
+    )
+    return resultado["netoFinal"]
+
+
+def construir_evolucion_ipc_salario(
+    cargos_disponibles: list[dict],
+    zona_referencia: float,
+) -> list[dict]:
+    aumentos_por_mes = {
+        item["mes"]: item for item in AUMENTOS_SALARIALES_2026_IMPACTO
+    }
+    factor_ipc = 1.0
+    factor_salario = 1.0
+    filas = []
+    neto_base_testigo = _neto_cargo_testigo_212(
+        cargos_disponibles,
+        valor_indice_anterior,
+        zona_referencia,
+    )
+
+    for item in IPC_2026_MENSUAL:
+        mes = item["mes"]
+        aumento_item = aumentos_por_mes.get(mes, {})
+        ipc_mensual = item["ipc"]
+        aumento_mensual = aumento_item.get("aumento", 0.0)
+
+        factor_ipc *= 1 + ipc_mensual
+        factor_salario *= 1 + aumento_mensual
+        neto_decreto_testigo = _neto_cargo_testigo_212(
+            cargos_disponibles,
+            _valor_indice_decreto_para_mes(mes),
+            zona_referencia,
+        )
+        neto_ipc_testigo = neto_base_testigo * factor_ipc
+
+        filas.append(
+            {
+                "Mes": mes,
+                "IPC mensual": ipc_mensual * 100,
+                "Aumento aplicado": aumento_mensual * 100,
+                "IPC acumulado": (factor_ipc - 1) * 100,
+                "Aumento acumulado decreto": (factor_salario - 1) * 100,
+                "Brecha acumulada p.p.": (factor_ipc - factor_salario) * 100,
+                "Recomposición necesaria": (factor_ipc / factor_salario - 1) * 100,
+                "Pérdida poder compra": (1 - factor_salario / factor_ipc) * 100,
+                "Neto testigo decreto": neto_decreto_testigo,
+                "Neto testigo IPC": neto_ipc_testigo,
+                "Diferencia testigo": neto_ipc_testigo - neto_decreto_testigo,
+                "Estado IPC": item["estado"],
+                "Fuente IPC": item["fuente"],
+                "Detalle aumento": aumento_item.get("detalle", "Sin aumento salarial aplicado"),
+            }
+        )
+    return filas
+
+
+def _datos_grafico_largo(datos: list[dict], campos: list[tuple[str, str]]) -> pd.DataFrame:
+    filas = []
+    for fila in datos:
+        for campo, serie in campos:
+            filas.append(
+                {
+                    "Mes": fila["Mes"],
+                    "Serie": serie,
+                    "Porcentaje": fila[campo],
+                    "Estado IPC": fila["Estado IPC"],
+                    "Detalle": fila["Detalle aumento"],
+                }
+            )
+    return pd.DataFrame(filas)
+
+
+def mostrar_evolucion_ipc_salario(
+    cargos_disponibles: list[dict],
+    zona_referencia: float,
+):
+    datos = construir_evolucion_ipc_salario(cargos_disponibles, zona_referencia)
+    meses = [fila["Mes"] for fila in datos]
+    ultimo = datos[-1]
+
+    with st.container(border=True):
+        titulo_tarjeta(
+            "Evolución IPC 2026 y salario",
+            "IPC",
+            "Comparación sobre el cargo testigo 212 con antigüedad mínima.",
+        )
+        tarjetas_metricas(
+            [
+                {
+                    "label": "IPC acumulado ene-ago",
+                    "value": porcentaje(ultimo["IPC acumulado"] / 100),
+                },
+                {
+                    "label": "Aumento decreto acumulado",
+                    "value": porcentaje(ultimo["Aumento acumulado decreto"] / 100),
+                },
+                {
+                    "label": "Brecha acumulada",
+                    "value": f"{ultimo['Brecha acumulada p.p.']:.2f}".replace(".", ",") + " p.p.",
+                },
+                {
+                    "label": "Recomposición sobre decreto",
+                    "value": porcentaje(ultimo["Recomposición necesaria"] / 100),
+                },
+                {
+                    "label": "Testigo agosto con decreto",
+                    "value": moneda(ultimo["Neto testigo decreto"]),
+                },
+                {
+                    "label": "Testigo agosto por IPC",
+                    "value": moneda(ultimo["Neto testigo IPC"]),
+                },
+                {
+                    "label": "Diferencia testigo agosto",
+                    "value": moneda(ultimo["Diferencia testigo"]),
+                },
+            ],
+            columnas="auto",
+        )
+
+        st.caption(
+            "Junio, julio y agosto usan estimaciones REM-BCRA de mayo 2026. "
+            "Los aumentos salariales se ubican en el mes de impacto en el bolsillo: "
+            "3,5% en junio y 4% en agosto. Cargo testigo: código 212, 1 cargo, "
+            "1 año de antigüedad (40%), sin descuento sindical y con la zona seleccionada."
+        )
+
+        st.markdown("**Curvas acumuladas: IPC vs aumento salarial**")
+        df_acumulado_porcentaje = _datos_grafico_largo(
+            datos,
+            [
+                ("IPC acumulado", "IPC acumulado"),
+                ("Aumento acumulado decreto", "Aumento salarial acumulado"),
+            ],
+        )
+        grafico_acumulado_porcentaje = (
+            alt.Chart(df_acumulado_porcentaje)
+            .mark_line(point=True, strokeWidth=3)
+            .encode(
+                x=alt.X("Mes:N", sort=meses, title=None),
+                y=alt.Y("Porcentaje:Q", title="% acumulado desde enero"),
+                color=alt.Color(
+                    "Serie:N",
+                    scale=alt.Scale(range=["#05a7c8", "#0000ff"]),
+                    legend=alt.Legend(title=None, orient="bottom"),
+                ),
+                tooltip=[
+                    alt.Tooltip("Mes:N"),
+                    alt.Tooltip("Serie:N"),
+                    alt.Tooltip("Porcentaje:Q", format=".2f", title="% acumulado"),
+                    alt.Tooltip("Estado IPC:N"),
+                    alt.Tooltip("Detalle:N"),
+                ],
+            )
+            .properties(height=280)
+        )
+        st.altair_chart(grafico_acumulado_porcentaje, use_container_width=True)
+
+        st.markdown("**Cargo testigo 212: valor real vs valor si compensaba IPC**")
+        df_testigo = pd.DataFrame(
+            [
+                {
+                    "Mes": fila["Mes"],
+                    "Serie": "Cargo testigo real con decreto",
+                    "Monto": fila["Neto testigo decreto"],
+                    "Monto millones": fila["Neto testigo decreto"] / 1_000_000,
+                    "Monto texto": moneda(fila["Neto testigo decreto"]),
+                    "Monto etiqueta": f"{fila['Neto testigo decreto'] / 1_000_000:.2f}".replace(".", ",") + " M",
+                }
+                for fila in datos
+            ]
+            + [
+                {
+                    "Mes": fila["Mes"],
+                    "Serie": "Cargo testigo si compensaba IPC",
+                    "Monto": fila["Neto testigo IPC"],
+                    "Monto millones": fila["Neto testigo IPC"] / 1_000_000,
+                    "Monto texto": moneda(fila["Neto testigo IPC"]),
+                    "Monto etiqueta": f"{fila['Neto testigo IPC'] / 1_000_000:.2f}".replace(".", ",") + " M",
+                }
+                for fila in datos
+            ]
+        )
+        minimo_millones = df_testigo["Monto millones"].min()
+        maximo_millones = df_testigo["Monto millones"].max()
+        rango_millones = max(maximo_millones - minimo_millones, 0.05)
+        margen_millones = rango_millones * 0.18
+        dominio_millones = [
+            max(0, minimo_millones - margen_millones),
+            maximo_millones + margen_millones,
+        ]
+        st.caption(
+            "Eje vertical expresado en millones de pesos, con escala ajustada al rango "
+            "del cargo testigo para visualizar mejor la brecha."
+        )
+        base_testigo = alt.Chart(df_testigo).encode(
+            x=alt.X("Mes:N", sort=meses, title=None),
+            y=alt.Y(
+                "Monto millones:Q",
+                title="Salario neto estimado (millones de pesos)",
+                scale=alt.Scale(domain=dominio_millones, zero=False, nice=False),
+                axis=alt.Axis(format=".2f"),
+            ),
+            color=alt.Color(
+                "Serie:N",
+                scale=alt.Scale(range=["#12866f", "#f28c28"]),
+                legend=alt.Legend(title=None, orient="bottom"),
+            ),
+        )
+        etiquetas_testigo = df_testigo[df_testigo["Mes"] == meses[-1]]
+        grafico_testigo = (
+            base_testigo.mark_line(point=True, strokeWidth=3).encode(
+                tooltip=[
+                    alt.Tooltip("Mes:N"),
+                    alt.Tooltip("Serie:N"),
+                    alt.Tooltip("Monto texto:N", title="Monto"),
+                    alt.Tooltip(
+                        "Monto millones:Q",
+                        format=".2f",
+                        title="Millones de pesos",
+                    ),
+                ],
+            )
+            + alt.Chart(etiquetas_testigo)
+            .mark_text(align="left", dx=8, fontSize=12, fontWeight="bold")
+            .encode(
+                x=alt.X("Mes:N", sort=meses, title=None),
+                y=alt.Y(
+                    "Monto millones:Q",
+                    scale=alt.Scale(domain=dominio_millones, zero=False, nice=False),
+                ),
+                color=alt.Color(
+                    "Serie:N",
+                    scale=alt.Scale(range=["#12866f", "#f28c28"]),
+                    legend=None,
+                ),
+                text=alt.Text("Monto etiqueta:N"),
+            )
+        ).properties(height=320)
+        st.altair_chart(grafico_testigo, use_container_width=True)
+
+        with st.expander("Ver detalle mensual de IPC y aumentos", expanded=False):
+            st.table(
+                [
+                    {
+                        "Mes": fila["Mes"],
+                        "IPC mensual": porcentaje(fila["IPC mensual"] / 100),
+                        "Estado IPC": fila["Estado IPC"],
+                        "Aumento aplicado": porcentaje(fila["Aumento aplicado"] / 100),
+                        "IPC acumulado": porcentaje(fila["IPC acumulado"] / 100),
+                        "Aumento acumulado decreto": porcentaje(
+                            fila["Aumento acumulado decreto"] / 100
+                        ),
+                        "Brecha acumulada": (
+                            f"{fila['Brecha acumulada p.p.']:.2f}".replace(".", ",")
+                            + " p.p."
+                        ),
+                        "Testigo decreto": moneda(fila["Neto testigo decreto"]),
+                        "Testigo si seguía IPC": moneda(fila["Neto testigo IPC"]),
+                        "Diferencia testigo": moneda(fila["Diferencia testigo"]),
+                    }
+                    for fila in datos
+                ]
+            )
+
+
 def consolidar_cargos(cargos_seleccionados: list[dict]) -> list[dict]:
     agrupados = {}
     for cargo in cargos_seleccionados:
@@ -1065,10 +1358,11 @@ with st.container(border=True):
             },
         ]
     )
+    foid_caption = moneda(detalle_no_remunerativos["foid"]).replace("$", r"\$")
+    material_caption = moneda(detalle_no_remunerativos["materialDidactico"]).replace("$", r"\$")
     st.caption(
         "No remunerativos automáticos previstos: FOID "
-        f"{moneda(detalle_no_remunerativos['foid'])} y material didáctico "
-        f"{moneda(detalle_no_remunerativos['materialDidactico'])}."
+        f"{foid_caption} y material didáctico {material_caption}."
     )
     mostrar_advertencia_ley_761(control_acumulacion)
 
@@ -1105,6 +1399,7 @@ if calcular:
             "Este simulador brinda un cálculo aproximado. Los valores definitivos surgen de la liquidación oficial del recibo de sueldo."
         )
         mostrar_netos_referencia(resultado_anterior, resultado_julio)
+        mostrar_evolucion_ipc_salario(cargos_ubicacion, zona_referencia)
 
     except ValueError as exc:
         st.error(str(exc))
