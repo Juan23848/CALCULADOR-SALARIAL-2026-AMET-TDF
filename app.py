@@ -1,25 +1,29 @@
 import base64
 import html
+import importlib
 from pathlib import Path
 
 import streamlit as st
 
+import configuracion as cfg
 from acumulacion import NIVELES_EXCEPCION, evaluar_acumulacion
 from cargos import (
     ajustar_bonificacion_docente_por_ubicacion,
     cargar_cargos_desde_xlsx,
     etiqueta_cargo,
 )
-from configuracion import (
-    MONTO_SEGURO_VIDA_OBLIGATORIO,
-    VALORES_INDICE_REFERENCIA,
-    ZONAS_REFERENCIA,
-)
 from descuentos import SINDICATOS
 from formato import moneda, parse_decimal, porcentaje
 from no_remunerativos import calcular_no_remunerativos
 from salario import calcular_salario
 
+
+cfg = importlib.reload(cfg)
+VALOR_INDICE_CALCULO_PRINCIPAL = cfg.VALOR_INDICE_CALCULO_PRINCIPAL
+VALOR_INDICE_COMPARATIVO_ANTERIOR = cfg.VALOR_INDICE_COMPARATIVO_ANTERIOR
+VALOR_INDICE_COMPARATIVO_JULIO = cfg.VALOR_INDICE_COMPARATIVO_JULIO
+VALORES_INDICE_REFERENCIA = cfg.VALORES_INDICE_REFERENCIA
+ZONAS_REFERENCIA = cfg.ZONAS_REFERENCIA
 
 BASE_DIR = Path(__file__).parent
 CARGOS_CACHE_VERSION = "simple-2026-06-25-v2"
@@ -821,6 +825,57 @@ def mostrar_detalle(resultado: dict):
             )
 
 
+def calcular_resultado_simulacion(
+    cargos_seleccionados: list[dict],
+    valor_indice: float,
+    anios_antiguedad: int,
+    zona_referencia: float,
+    sindicatos_seleccionados: list[str],
+) -> dict:
+    return calcular_salario(
+        cargos_seleccionados,
+        valor_indice,
+        int(anios_antiguedad),
+        otros_remunerativos=0.0,
+        no_remunerativos=0.0,
+        descuento_adicional_porcentaje=0.0,
+        descuento_adicional_fijo=0.0,
+        incluir_jubilacion=True,
+        incluir_obra_social=True,
+        tasa_obra_social=0.03,
+        tasa_zona=zona_referencia,
+        incluir_no_remunerativos_automaticos=True,
+        incluir_asignacion_hora_catedra=True,
+        sindicatos=sindicatos_seleccionados,
+    )
+
+
+def mostrar_netos_referencia(resultado_anterior: dict, resultado_julio: dict):
+    with st.container(border=True):
+        titulo_tarjeta(
+            "Netos de referencia",
+            "N",
+            "Cálculos automáticos con la misma carga de datos.",
+        )
+        tarjetas_metricas(
+            [
+                {
+                    "label": "Haberes abril - valor índice anterior",
+                    "value": moneda(resultado_anterior["netoFinal"]),
+                },
+                {
+                    "label": "Julio 2026 - se cobra en agosto",
+                    "value": moneda(resultado_julio["netoFinal"]),
+                },
+            ],
+            columnas="two",
+        )
+        st.caption(
+            "Estos importes muestran solamente el neto estimado. No incluyen cálculo "
+            "de retroactivos ni SAC."
+        )
+
+
 def consolidar_cargos(cargos_seleccionados: list[dict]) -> list[dict]:
     agrupados = {}
     for cargo in cargos_seleccionados:
@@ -847,7 +902,9 @@ except Exception as exc:
     st.error(f"No se pudo cargar la tabla de cargos: {exc}")
     st.stop()
 
-valor_indice = VALORES_INDICE_REFERENCIA["Mayo 2026 recibos"]
+valor_indice = VALORES_INDICE_REFERENCIA[VALOR_INDICE_CALCULO_PRINCIPAL]
+valor_indice_anterior = VALORES_INDICE_REFERENCIA[VALOR_INDICE_COMPARATIVO_ANTERIOR]
+valor_indice_julio = VALORES_INDICE_REFERENCIA[VALOR_INDICE_COMPARATIVO_JULIO]
 
 with st.container(border=True):
     titulo_tarjeta(
@@ -872,8 +929,8 @@ with st.container(border=True):
     else:
         estado_zona(f"Zona aplicada: {zona_porcentaje_corto}.")
     st.caption(
-        "Valor índice aplicado: Mayo 2026 recibos "
-        f"({str(valor_indice).replace('.', ',')})."
+        "Valor índice aplicado según Decreto Provincial 1059/26 - Anexo I, "
+        f"mayo 2026: {str(valor_indice).replace('.', ',')}."
     )
 
 cargos_ubicacion = [
@@ -1021,27 +1078,33 @@ with boton_der:
 
 if calcular:
     try:
-        resultado_actual = calcular_salario(
+        resultado_actual = calcular_resultado_simulacion(
             cargos_seleccionados,
             valor_indice,
             int(anios_antiguedad),
-            otros_remunerativos=0.0,
-            no_remunerativos=0.0,
-            descuento_adicional_porcentaje=0.0,
-            descuento_adicional_fijo=0.0,
-            incluir_jubilacion=True,
-            incluir_obra_social=True,
-            tasa_obra_social=0.03,
-            tasa_zona=zona_referencia,
-            incluir_no_remunerativos_automaticos=True,
-            incluir_asignacion_hora_catedra=True,
-            sindicatos=sindicatos_seleccionados,
+            zona_referencia,
+            sindicatos_seleccionados,
+        )
+        resultado_anterior = calcular_resultado_simulacion(
+            cargos_seleccionados,
+            valor_indice_anterior,
+            int(anios_antiguedad),
+            zona_referencia,
+            sindicatos_seleccionados,
+        )
+        resultado_julio = calcular_resultado_simulacion(
+            cargos_seleccionados,
+            valor_indice_julio,
+            int(anios_antiguedad),
+            zona_referencia,
+            sindicatos_seleccionados,
         )
 
         mostrar_detalle(resultado_actual)
         nota_chica(
             "Este simulador brinda un cálculo aproximado. Los valores definitivos surgen de la liquidación oficial del recibo de sueldo."
         )
+        mostrar_netos_referencia(resultado_anterior, resultado_julio)
 
     except ValueError as exc:
         st.error(str(exc))

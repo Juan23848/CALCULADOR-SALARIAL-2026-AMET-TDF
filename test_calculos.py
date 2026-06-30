@@ -68,11 +68,26 @@ class CalculosSalarialesTest(unittest.TestCase):
         self.assertEqual(ZONAS_REFERENCIA["Tolhuin"], 1.20)
         self.assertEqual(ZONAS_REFERENCIA["Escuelas Rurales"], 1.20)
 
-    def test_valor_indice_base_es_mayo_2026(self):
-        self.assertEqual(list(VALORES_INDICE_REFERENCIA), ["Mayo 2026 recibos"])
+    def test_valores_indice_referencia_decreto_1059_26(self):
+        self.assertEqual(
+            list(VALORES_INDICE_REFERENCIA),
+            [
+                "Haberes abril 2026 (valor anterior)",
+                "Mayo 2026 Decreto 1059/26",
+                "Julio 2026 Decreto 1059/26",
+            ],
+        )
         self.assertAlmostEqual(
-            VALORES_INDICE_REFERENCIA["Mayo 2026 recibos"],
+            VALORES_INDICE_REFERENCIA["Haberes abril 2026 (valor anterior)"],
             95.72248503794604,
+        )
+        self.assertAlmostEqual(
+            VALORES_INDICE_REFERENCIA["Mayo 2026 Decreto 1059/26"],
+            99.07276,
+        )
+        self.assertAlmostEqual(
+            VALORES_INDICE_REFERENCIA["Julio 2026 Decreto 1059/26"],
+            103.03567,
         )
 
     def test_descuentos_obligatorios_por_defecto(self):
