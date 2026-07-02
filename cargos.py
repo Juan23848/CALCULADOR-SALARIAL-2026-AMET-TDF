@@ -136,8 +136,6 @@ def etiqueta_cargo(cargo: dict) -> str:
         ayudas.append("Vicedirector/a")
     if "sec" in descripcion_normalizada:
         ayudas.append("Secretario/a")
-    if cargo.get("bonificacionDocentePorcentaje", 0.0) > 0:
-        ayudas.append("Bonif. Docente 15% s/basico+antig.")
     adicional_jerarquico = cargo.get("adicionalJerarquicoPorcentaje", 0.0)
     if adicional_jerarquico > 0:
         ayudas.append(f"Adic. Jerarquico {adicional_jerarquico * 100:g}%")
