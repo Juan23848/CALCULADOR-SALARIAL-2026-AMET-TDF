@@ -74,7 +74,10 @@ def calcular_componentes(
         )
         bonif_porcentaje = float(item.get("bonificacionDocentePorcentaje") or 0.0)
         bonif_fija = float(item.get("bonificacionDocenteMonto") or 0.0)
-        bonificacion_item = _redondear_monto(basico_item * bonif_porcentaje + bonif_fija)
+        base_bonificacion_item = basico_item + antiguedad_item
+        bonificacion_item = _redondear_monto(
+            base_bonificacion_item * bonif_porcentaje + bonif_fija
+        )
         jerarquico_porcentaje = float(item.get("adicionalJerarquicoPorcentaje") or 0.0)
         jerarquico_item = _redondear_monto(basico_item * jerarquico_porcentaje)
         base_zona_item = basico_item + antiguedad_item + funcion_item
