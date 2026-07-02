@@ -120,8 +120,6 @@ def ajustar_bonificacion_docente_por_ubicacion(cargo: dict, ubicacion_zona: str)
 
 
 def etiqueta_cargo(cargo: dict) -> str:
-    puntaje = cargo.get("puntajeCargo")
-    puntaje_txt = "sin puntaje" if puntaje is None else f"{puntaje:.6f} pts"
     descripcion = cargo["descripcion"]
     ayudas = []
     descripcion_normalizada = normalizar_busqueda(descripcion)
@@ -141,7 +139,7 @@ def etiqueta_cargo(cargo: dict) -> str:
         ayudas.append(f"Adic. Jerarquico {adicional_jerarquico * 100:g}%")
 
     ayuda_txt = f" - {' / '.join(ayudas)}" if ayudas else ""
-    return f'{cargo["codigoCargo"]} - {descripcion}{ayuda_txt} ({puntaje_txt})'
+    return f'{cargo["codigoCargo"]} - {descripcion}{ayuda_txt}'
 
 
 def bonificacion_docente_porcentaje(codigo_cargo: str) -> float:
