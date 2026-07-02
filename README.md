@@ -1,3 +1,12 @@
+---
+title: Simulador Salarial AMET TDF
+colorFrom: blue
+colorTo: cyan
+sdk: docker
+app_port: 8501
+pinned: false
+---
+
 # Simulador Salarial Docente AMET Tierra del Fuego
 
 Aplicacion Streamlit para estimar salario docente a partir de codigo de cargo,
