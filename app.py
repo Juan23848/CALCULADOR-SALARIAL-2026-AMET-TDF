@@ -14,6 +14,7 @@ from cargos import (
     buscar_cargo,
     cargar_cargos_desde_xlsx,
     etiqueta_cargo,
+    filtrar_cargos,
 )
 from descuentos import SINDICATOS
 from formato import moneda, parse_decimal, porcentaje
@@ -1230,12 +1231,6 @@ cargos_ubicacion = [
     ajustar_bonificacion_docente_por_ubicacion(cargo, ubicacion_zona)
     for cargo in cargos
 ]
-opciones = [etiqueta_cargo(cargo) for cargo in cargos_ubicacion]
-por_etiqueta = dict(zip(opciones, cargos_ubicacion))
-indice_212 = next(
-    (i for i, cargo in enumerate(cargos_ubicacion) if cargo["codigoCargo"] == "212"),
-    0,
-)
 
 with st.container(border=True):
     titulo_tarjeta(
@@ -1261,13 +1256,34 @@ with st.container(border=True):
         st.markdown(f"**Cargo / hora {indice + 1}**")
         col_cargo, col_cantidad = st.columns([5, 1])
         with col_cargo:
+            busqueda_cargo = st.text_input(
+                "Buscar cargo u horas cátedra",
+                key=f"buscar_cargo_{indice}",
+                placeholder="Ej.: 420, preceptor, horas cátedra",
+            )
+            cargos_filtrados = filtrar_cargos(cargos_ubicacion, busqueda_cargo, limite=80)
+            if not cargos_filtrados:
+                st.warning("No encontramos cargos con esa búsqueda. Revise el código o la descripción.")
+                continue
+            opciones_filtradas = [etiqueta_cargo(cargo) for cargo in cargos_filtrados]
+            por_etiqueta_filtrada = dict(zip(opciones_filtradas, cargos_filtrados))
+            indice_default = 0
+            if not busqueda_cargo and indice == 0:
+                indice_default = next(
+                    (
+                        i
+                        for i, cargo in enumerate(cargos_filtrados)
+                        if cargo["codigoCargo"] == "212"
+                    ),
+                    0,
+                )
             seleccionado = st.selectbox(
-                "Seleccionar cargo u horas cátedra (puede escribir código o descripción)",
-                opciones,
-                index=indice_212 if indice == 0 else 0,
+                "Seleccionar resultado",
+                opciones_filtradas,
+                index=indice_default,
                 key=f"nuevo_cargo_{indice}",
             )
-        cargo = dict(por_etiqueta[seleccionado])
+        cargo = dict(por_etiqueta_filtrada[seleccionado])
         with col_cantidad:
             etiqueta_cantidad = "Horas" if cargo["esHoraCatedra"] else "Cantidad"
             cantidad = st.number_input(
@@ -1284,6 +1300,9 @@ with st.container(border=True):
     nota_chica(
         "Para sumar otra línea, aumente la cantidad de cargos u horas cátedra a incorporar."
     )
+
+if not cargos_seleccionados:
+    st.stop()
 
 cargos_seleccionados = consolidar_cargos(cargos_seleccionados)
 control_acumulacion = evaluar_acumulacion(cargos_seleccionados, 0)

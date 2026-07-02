@@ -212,10 +212,24 @@ def filtrar_cargos(cargos: list[dict], busqueda: str, limite: int = 60) -> list[
     terminos = [_alternativas_termino(termino) for termino in texto.split()]
     encontrados = []
     for cargo in cargos:
+        codigo = normalizar_busqueda(cargo["codigoCargo"])
+        descripcion = normalizar_busqueda(cargo["descripcion"])
         base = normalizar_busqueda(
             f'{cargo["codigoCargo"]} {cargo["descripcion"]}'
         )
         if all(any(alternativa in base for alternativa in alternativas) for alternativas in terminos):
-            encontrados.append(cargo)
+            texto_codigo = texto.replace(" ", "")
+            if texto_codigo and codigo == texto_codigo:
+                prioridad = 0
+            elif texto_codigo and codigo.startswith(texto_codigo):
+                prioridad = 1
+            elif texto_codigo and texto_codigo in codigo:
+                prioridad = 2
+            elif descripcion.startswith(texto):
+                prioridad = 3
+            else:
+                prioridad = 4
+            encontrados.append((prioridad, codigo, cargo))
 
-    return encontrados[:limite]
+    encontrados.sort(key=lambda item: (item[0], item[1]))
+    return [cargo for _, _, cargo in encontrados[:limite]]
