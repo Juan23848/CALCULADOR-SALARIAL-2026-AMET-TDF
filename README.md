@@ -11,9 +11,9 @@ pinned: false
 
 Aplicacion Streamlit para estimar salario docente a partir de codigo de cargo,
 puntaje, Valor Indice, antiguedad, ubicacion y descuentos basicos.
-Por defecto inicia con el Valor Indice inferido de recibos de mayo 2026.
-Ese Valor Indice de mayo 2026 es el punto de partida para futuras
-modificaciones del decreto; los aumentos no se aplican automaticamente todavia.
+Por defecto inicia con el Valor Indice de julio 2026 del Decreto Provincial
+1059/26, que incorpora el incremento del 4% para la liquidacion que se cobra
+en agosto. El valor de mayo 2026 queda como referencia previa para comparar.
 
 La carga de cargos se hace agrupando por tipo/codigo. Por ejemplo: todas las
 horas del codigo 852 en una sola linea, todas las del 312 en otra, etc. El
@@ -55,9 +55,7 @@ Tambien se puede iniciar con:
 - Transformacion Educativa = Basico x 123%.
 - Bonificacion Docente se aplica automaticamente por codigo cuando corresponde,
   segun la planilla de codigos aportada.
-- Bonificacion Docente = Basico x 27,75%.
-- Excepcion validada con recibo de Tolhuin: codigo 421 en Tolhuin liquida
-  Bonificacion Docente al 23,25%.
+- Bonificacion Docente = (Basico + Antiguedad) x 15%.
 - Adicional Jerarquico se aplica automaticamente por codigo cuando corresponde.
 - Adicional Jerarquico = Basico x 55%.
 - Zona = (Basico + Antiguedad + Funcion Docente + Transformacion Educativa + Bonificacion Docente + Adicional Jerarquico) x porcentaje de ubicacion.
@@ -103,8 +101,8 @@ Tambien se puede iniciar con:
   215. Suma al bruto remunerativo y por lo tanto integra la base de descuentos.
 - Neto final = Bruto remunerativo - descuentos + no remunerativos automaticos + otros no remunerativos.
 - El calculo redondea cada concepto a centavos para aproximarse al criterio del recibo oficial.
-- Punto de partida para aumentos futuros: Valor Indice mayo 2026, sin aplicar
-  todavia las modificaciones del Decreto Provincial 1059/26.
+- Valor Indice actual: julio 2026 Decreto Provincial 1059/26, con incremento
+  del 4% aplicado sobre el valor de mayo.
 
 ## Control Ley Provincial 761
 

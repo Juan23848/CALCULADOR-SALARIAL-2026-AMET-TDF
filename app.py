@@ -1223,7 +1223,7 @@ with st.container(border=True):
         estado_zona(f"Zona aplicada: {zona_porcentaje_corto}.")
     st.caption(
         "Valor índice aplicado según Decreto Provincial 1059/26 - Anexo I, "
-        f"mayo 2026: {str(valor_indice).replace('.', ',')}."
+        f"{VALOR_INDICE_CALCULO_PRINCIPAL}: {str(valor_indice).replace('.', ',')}."
     )
 
 cargos_ubicacion = [
